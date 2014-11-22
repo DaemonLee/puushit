@@ -16,14 +16,17 @@
 # limitations under the License.
 
 #PUUSH_API_KEY=""
-IMAGE="/tmp/screeny.png"
+
+if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
+
+IMAGE+=$(date "+%FT%T")".png"
 
 import $IMAGE
 
 # Thanks @blha303 for this line! Originally from: https://github.com/blha303/puush-linux
 URL=`curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/'`
 
-echo -n $URL | xclip -selection clipboard
+echo -n "$URL" | xclip -selection clipboard
 
 notify-send -u low "$URL copied to clipboard"
 
