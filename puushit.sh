@@ -26,6 +26,8 @@ import $IMAGE
 # Thanks @blha303 for this line! Originally from: https://github.com/blha303/puush-linux
 URL=`curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/'`
 
+URL=$(echo -n "$URL" | sed 0,/http/{s/http/https/})
+
 echo -n "$URL" | xclip -selection clipboard
 
 notify-send -u low "$URL copied to clipboard"
