@@ -21,7 +21,7 @@ if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$
 
 IMAGE+=$(date "+%FT%T")".png"
 
-import $IMAGE
+import +repage $IMAGE
 
 # Thanks @blha303 for this line! Originally from: https://github.com/blha303/puush-linux
 URL=`curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/'`
