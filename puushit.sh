@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# puushit - A small script designed for integration in minimalist window managers.
+# puushit - A small script designed for puush.me integration in minimalist window managers.
 # Copyright 2014 Daemon Lee Schmidt
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,7 @@ IMAGE+=$(date "+%FT%T")".png"
 import +repage $IMAGE
 
 # Thanks @blha303 for this line! Originally from: https://github.com/blha303/puush-linux
-URL=`curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/'`
-
-URL=$(echo -n "$URL" | sed 0,/http/{s/http/https/})
+URL=$(curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/;0,/http/{s/http/https/}')
 
 echo -n "$URL" | xclip -selection clipboard
 
