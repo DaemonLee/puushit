@@ -23,7 +23,7 @@ IMAGE+=$(date "+%FT%T")".png"
 
 eval $(slop)
 
-import -quality 100 -window root -crop "$W"x"$H"+"$X"+"$Y" +repage $IMAGE
+import -quality 100 -window root -crop "$G" +repage $IMAGE
 
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
 URL=$(curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/;0,/http/{s/http/https/}')
