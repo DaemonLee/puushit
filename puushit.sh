@@ -23,6 +23,10 @@ IMAGE+=$(date "+%FT%T")".png"
 
 eval $(slop)
 
+if [ "$Cancel" == "true" ]; then
+  exit 1
+fi
+
 import -quality 100 -strip -window root -crop "$G" +repage $IMAGE
 
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
