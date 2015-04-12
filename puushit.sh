@@ -17,17 +17,46 @@
 
 #PUUSH_API_KEY=""
 
-if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
+# flags
+CUSTOMIMAGE_FLAG=false
 
-IMAGE+=$(date "+%FT%T")".png"
+while [[ $# > 1 ]]
+do
+opts="$1"
 
-eval $(slop)
+case $opts in
+  -i|--input)
+  IMAGE=$2
+  CUSTOMIMAGE_FLAG=true
+  shift
+  ;;
+  -k|--key)
+  PUUSH_API_KEY=$2
+  shift
+  ;;
+  *)
+  ;;
+esac
+shift
+done
 
-if [ "$Cancel" == "true" ]; then
+if [ -z ${PUUSH_API_KEY+x} ]; then
+  echo "Please enter a Puush API key using -k|--key [KEY] or set PUUSH_API_KEY in the script to it."
   exit 1
 fi
 
-import -quality 100 -strip -window root -crop "$G" +repage $IMAGE
+if ! $CUSTOMIMAGE_FLAG ; then
+  if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
+  IMAGE+=$(date "+%FT%T")".png"
+
+  eval $(slop)
+
+  if [ "$Cancel" == "true" ]; then
+    exit 1
+  fi
+
+  import -quality 100 -strip -window root -crop "$G" +repage $IMAGE
+fi
 
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
 URL=$(curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/;0,/http/{s/http/https/}')
@@ -36,4 +65,6 @@ echo -n "$URL" | xclip -selection clipboard
 
 notify-send -u low "$URL copied to clipboard"
 
-rm $IMAGE
+if  ! $CUSTOMIMAGE_FLAG ; then
+  rm $IMAGE
+fi
