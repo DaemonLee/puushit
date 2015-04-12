@@ -41,7 +41,7 @@ shift
 done
 
 if [ -z ${PUUSH_API_KEY+x} ]; then
-  echo "Please enter a Puush API key using -k|--key [KEY] or set PUUSH_API_KEY in the script to it."
+  echo "Please enter a Puush API key using -k|--key [KEY] or set PUUSH_API_KEY to it."
   exit 1
 fi
 
