@@ -55,7 +55,7 @@ if ! $CUSTOMIMAGE_FLAG ; then
     exit 1
   fi
 
-  import -quality 100 -strip -window root -crop "$G" +repage $IMAGE
+  import -quality 99 -strip -window root -crop "$G" +repage $IMAGE
 fi
 
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
