@@ -19,8 +19,12 @@
 
 # flags
 CUSTOMIMAGE_FLAG=false
+FULLSCREEN_FLAG=false
 
-while [[ $# > 1 ]]
+# default values
+OPTILEVEL="2"
+
+while [[ $# > 0 ]]
 do
 opts="$1"
 
@@ -30,8 +34,16 @@ case $opts in
   CUSTOMIMAGE_FLAG=true
   shift
   ;;
+  -f|--fullscreen)
+  FULLSCREEN_FLAG=true
+  shift
+  ;;
   -k|--key)
   PUUSH_API_KEY=$2
+  shift
+  ;;
+  -o|--optilevel)
+  OPTILEVEL=$2
   shift
   ;;
   *)
@@ -45,26 +57,32 @@ if [ -z ${PUUSH_API_KEY+x} ]; then
   exit 1
 fi
 
-if ! $CUSTOMIMAGE_FLAG ; then
+if ! $CUSTOMIMAGE_FLAG; then
   if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
   IMAGE+=$(date "+%FT%T")".png"
 
-  eval $(slop)
+  if $FULLSCREEN_FLAG; then
+    maim $IMAGE
+  else
+    eval $(slop)
 
-  if [ "$Cancel" == "true" ]; then
-    exit 1
+    if [ "$Cancel" == "true" ]; then
+      exit 1
+    fi
+
+    import -quality 10 -strip -window root -crop "$G" +repage $IMAGE
   fi
-
-  import -quality 99 -strip -window root -crop "$G" +repage $IMAGE
 fi
 
+optipng -quiet -clobber -strip all -o$OPTILEVEL $IMAGE
+
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
-URL=$(curl "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/;0,/http/{s/http/https/}')
+URL=$(curl --ssl-reqd "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/;0,/http/{s/http/https/}')
 
 echo -n "$URL" | xclip -selection clipboard
 
 notify-send -u low "$URL copied to clipboard"
 
-if  ! $CUSTOMIMAGE_FLAG ; then
+if ! $CUSTOMIMAGE_FLAG; then
   rm $IMAGE
 fi
