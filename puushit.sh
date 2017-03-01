@@ -64,7 +64,7 @@ if ! $CUSTOMIMAGE_FLAG; then
   if $FULLSCREEN_FLAG; then
     maim $IMAGE
   else
-    eval $(slop)
+    G=$(slop)
 
     if [ "$Cancel" == "true" ]; then
       exit 1
