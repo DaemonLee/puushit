@@ -24,7 +24,7 @@ FULLSCREEN_FLAG=false
 # default values
 OPTILEVEL="2"
 
-while [[ $# > 0 ]]
+while [ $# -gt 0 ]
 do
 opts="$1"
 
@@ -52,37 +52,37 @@ esac
 shift
 done
 
-if [ -z ${PUUSH_API_KEY+x} ]; then
+if [ -z "${PUUSH_API_KEY+x}" ]; then
   echo "Please enter a Puush API key using -k|--key [KEY] or set PUUSH_API_KEY to it."
   exit 1
 fi
 
 if ! $CUSTOMIMAGE_FLAG; then
-  if [ -z ${XDG_CACHE_HOME+x} ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
+  if [ -z "${XDG_CACHE_HOME+x}" ]; then IMAGE="$HOME/.cache/puushit-"; else IMAGE="$XDG_CACHE_HOME/puushit-"; fi
   IMAGE+=$(date "+%FT%T")".png"
 
   if $FULLSCREEN_FLAG; then
-    maim $IMAGE
+    maim "$IMAGE"
   else
     G=$(slop)
 
-    if [ "$Cancel" == "true" ]; then
+    if [ "$G" = "" ]; then
       exit 1
     fi
 
-    import -quality 10 -strip -window root -crop "$G" +repage $IMAGE
+    import -quality 10 -strip -window root -crop "$G" +repage "$IMAGE"
   fi
 fi
 
-optipng -quiet -clobber -strip all -o$OPTILEVEL $IMAGE
+optipng -quiet -clobber -strip all -o"$OPTILEVEL" "$IMAGE"
 
 # Thanks @blha303 for part of this line! Originally from: https://github.com/blha303/puush-linux
 URL=$(curl --ssl-reqd "https://puush.me/api/up" -F "k=$PUUSH_API_KEY" -F "z=z" -F "f=@$IMAGE" 2>/dev/null | sed -E 's/^.+,(.+),.+,.+$/\1/')
 
-echo -n "$URL" | xclip -selection clipboard
+printf "%s" "$URL" | xclip -selection clipboard
 
 notify-send -u low "$URL copied to clipboard"
 
 if ! $CUSTOMIMAGE_FLAG; then
-  rm $IMAGE
+  rm "$IMAGE"
 fi
